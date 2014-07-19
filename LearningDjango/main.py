@@ -8,6 +8,7 @@ PATH = '/Users/rubenspessoa/Documents/Workspace/DATASET/'
 
 if __name__ == '__main__':
 	while True:
-    	fill_db_movie_info(PATH + 'test_subdataset.csv')
-    except:
-    	continue
+		try:	
+	    	fill_db_movie_info(PATH + 'test_subdataset.csv')
+	    except:
+	    	continue
