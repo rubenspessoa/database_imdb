@@ -36,12 +36,14 @@ class Movie(models.Model):
     language = models.ManyToManyField(Language)
     directors = models.ManyToManyField(Director)
     
+    """
     def __init__(self, id_movie, rating, votes, year):
         super(Movie, self).__init__()
         self.id_movie = id_movie
         self.rating = rating
         self.votes = votes
         self.year = year
+    """
             
     def __unicode__(self):
         return self.id_movie
