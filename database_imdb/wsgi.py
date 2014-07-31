@@ -1,5 +1,5 @@
 """
-WSGI config for database_imdb project.
+WSGI config for database_IMDb_v2 project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -8,7 +8,7 @@ https://docs.djangoproject.com/en/1.6/howto/deployment/wsgi/
 """
 
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "database_imdb.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "database_IMDb_v2.settings")
 
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()

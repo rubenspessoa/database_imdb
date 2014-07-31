@@ -41,13 +41,10 @@ def save_sheet(file_name, content, title):
 
 def fill_db_movie_info(the_sheet_file):
     file_csv = read_sheet(the_sheet_file)
-    test = list()
     
     for movie in file_csv:
-        
         try:
-    
-            id_filme = movie['id_move']
+            id_filme = file_csv['id_move']
             
             if not Movie.objects.filter(id_movie=id_filme).exists():
                 
@@ -68,34 +65,24 @@ def fill_db_movie_info(the_sheet_file):
                 else:
                     movie_year = -1
                 
-                list_to_print = list()
-                list_to_print.append(id_filme)    
-                list_to_print.append(rating_imdb)
-                list_to_print.append(movie_votes)
-                list_to_print.append(movie_year)
                 addToDB = Movie(id_filme, rating_imdb, movie_votes, movie_year)
                 addToDB.save()
                 
                 if info.has_key('genero'):
                     
                     movie_genre = info['genero']
-                    list_to_print.append(movie_genre)
-                    
                     genreToDB, created = Genre.objects.get_or_create(genre=movie_genre)
                     addToDB.genre.add(genreToDB)
                     
                 if info.has_key('pais'):
                     
                     movie_country = info['pais']
-                    list_to_print.append(movie_country)
-                    
                     countryToDB, created = Country.objects.get_or_create(country=movie_country)
                     addToDB.country.add(countryToDB)
                     
                 if info.has_key('idioma'):
                     
                     movie_lang = info['idioma']
-                    list_to_print.append(movie_lang)
                     langToDB, created = Language.objects.get_or_create(language=movie_lang)
                     addToDB.language.add(langToDB)
                       
@@ -104,21 +91,14 @@ def fill_db_movie_info(the_sheet_file):
                     movie_directors = info['directors']
                     
                     for m_director in movie_directors:
-                        list_to_print.append(m_director['name'])
                         directorToDB, created = Director.objects.get_or_create(director=m_director['name'])
                         addToDB.directors.add(directorToDB)
-                        
-                print "salvou: ", list_to_print
         except:
             continue
-    print "acabou"
-
-                       
+                    
 def update_csv_file(the_sheet_file, output_file):
     import sys
-    import codecs
-    encode =sys.stdin.encoding
-    import sqlite3
+    encode = sys.stdin.encoding
     file_csv = read_sheet(the_sheet_file)
     
     title = ['id_movie', 'movie_rating', 'crawled_time', 'tweet_time', 'followers_count', 'statuses_count',
@@ -140,54 +120,33 @@ def update_csv_file(the_sheet_file, output_file):
         row = [id_movie, movie_rating, crawled_time, tweet_time, followers_count, statuses_count, favourites_count,
                engagement]
         
-        
-        conn = sqlite3.connect("db.sqlite3")
-        cursor = conn.cursor()
-        
-        sql = "SELECT * FROM movie_info_movie WHERE id_movie LIKE '%s'" % movie['id_move'].zfill(7)
-        
-        # ACHA INFORMACOES BASICAS DOS FILMES
-        for query1 in cursor.execute(sql):
-            for i in range(2, len(query1)):
-                row.append(query1[i].encode(encode))
+        if Movie.objects.filter(id_movie=movie["id_move"]).exists():
             
-            # ACHA ID DO PAIS RELACIONADO AO FILME
-            sql = "SELECT * FROM movie_info_movie_country WHERE movie_id LIKE '%s'" % query1[0]
-            for query2 in cursor.execute(sql):
+            movie_obj = Movie.objects.get(id_movie=movie["id_move"])
+            
+            row.append(movie_obj.rating)
+            row.append(movie_obj.votes)
+            row.append(movie_obj.year)
+            
+            if movie_obj.country.exists():
+                row.append(movie_obj.country.all())
+            else:
+                row.append(-1)
+            
+            if movie_obj.directors.exists():
+                row.append(movie_obj.directors.all())
+            else:
+                row.append(-1)
                 
-                # BUSCA STR DO PAIS RELACIONADO AO FILME
-                sql = "SELECT * FROM movie_info_country WHERE id LIKE '%s'" % query2[2]
-                for query3 in cursor.execute(sql):
-                    row.append(query3[1].encode(encode))
-                    
-            # ACHA ID DO DIRETOR RELACIONADO AO FILME
-            sql = "SELECT * FROM movie_info_movie_directors WHERE movie_id LIKE '%s'" % query1[0]
-            for query2 in cursor.execute(sql):
-                
-                # BUSCA STR DO DIRETOR RELACIONADO AO FILME
-                sql = "SELECT * FROM movie_info_director WHERE id LIKE '%s'" % query2[2]
-                for query3 in cursor.execute(sql):
-                    row.append(query3[1].encode(encode))
-                    
-            # ACHA ID DO GENERO RELACIONADO AO FILME
-            sql = "SELECT * FROM movie_info_movie_genre WHERE movie_id LIKE '%s'" % query1[0]
-            for query2 in cursor.execute(sql):
-                
-                # BUSCA STR DO GENERO RELACIONADO AO FILME
-                sql = "SELECT * FROM movie_info_genre WHERE id LIKE '%s'" % query2[2]
-                for query3 in cursor.execute(sql):
-                    row.append(query3[1].encode(encode))
-                    
-            # ACHA ID DO IDIOMA RELACIONADO AO FILME
-            sql = "SELECT * FROM movie_info_movie_language WHERE movie_id LIKE '%s'" % query1[0]
-            for query2 in cursor.execute(sql):
-                
-                # BUSCA STR DO PAIS RELACIONADO AO FILME
-                sql = "SELECT * FROM movie_info_language WHERE id LIKE '%s'" % query2[2]
-                for query3 in cursor.execute(sql):
-                    row.append(query3[1].encode(encode))
-        
-        print row
+            if movie_obj.genre.exists():
+                row.append(movie_obj.genre.all())
+            else:
+                row.append(-1)
+    
+            if movie_obj.language.exists():
+                row.append(movie_obj.language.all())
+            else:
+                row.append(-1)
+
         content.append(row)
     save_sheet(file_name=output_file, content=content, title=title)
-    print "acabou"

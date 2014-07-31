@@ -1,5 +1,5 @@
 """
-Django settings for database_imdb project.
+Django settings for database_IMDb_v2 project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.6/topics/settings/
@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ')=7z8k)0zg6yy#lrq@!z)im)n7b_wa^7*#va_ycf&5@rezt@_t'
+SECRET_KEY = '+_660rz!*uy3khztngn1cooo*1*t6wpb9^wy3)je1n8!5m)+g^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'movie_info',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -47,9 +48,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'database_imdb.urls'
+ROOT_URLCONF = 'database_IMDb_v2.urls'
 
-WSGI_APPLICATION = 'database_imdb.wsgi.application'
+WSGI_APPLICATION = 'database_IMDb_v2.wsgi.application'
 
 
 # Database
